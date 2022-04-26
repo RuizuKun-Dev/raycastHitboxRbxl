@@ -1,7 +1,7 @@
 [package]
 name = "ruizukun-dev/raycasthitbox"
 description = "A hit detection system that utilizes Roblox's Raycasting APIs."
-version = "1.0.1"
+version = "1.0.2"
 license = "MIT"
 authors = ["Swordphin"]
 realm = "shared"
