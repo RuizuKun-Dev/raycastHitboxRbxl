@@ -1,0 +1,14 @@
+[package]
+name = "ruizukun-dev/raycasthitbox"
+description = "A hit detection system that utilizes Roblox's Raycasting APIs."
+version = "1.0.0"
+license = "MIT"
+authors = ["Swordphin"]
+realm = "shared"
+registry = "https://github.com/upliftgames/wally-index"
+
+exclude = ["*"]
+include = ["lib", "lib/init.lua", "lib/init.meta.json", 
+"default.project.json", "wally.toml"]
+
+[dependencies]
