@@ -1,3 +1,5 @@
+-- #selene: allow(unused_variable)
+
 local DEFAULT_ATTACHMENT_INSTANCE = "DmgPoint"
 local DEFAULT_GROUP_NAME_INSTANCE = "Group"
 local DEFAULT_DEBUGGER_RAY_DURATION = 0.25

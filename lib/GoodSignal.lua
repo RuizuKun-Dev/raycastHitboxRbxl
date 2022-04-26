@@ -1,3 +1,6 @@
+-- #selene: allow(incorrect_standard_library_use)
+-- #selene: allow(unused_variable)
+
 local freeRunnerThread = nil
 
 local function acquireRunnerThreadAndCallEventHandler(fn, ...)
