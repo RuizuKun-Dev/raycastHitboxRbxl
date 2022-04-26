@@ -8,7 +8,10 @@ realm = "shared"
 registry = "https://github.com/upliftgames/wally-index"
 
 exclude = ["*"]
-include = ["lib", "lib/init.lua", "lib/init.meta.json", 
+include = ["lib", "lib/init.lua", "lib/init.meta.json",
+"lib/Solvers", "lib/Solvers/Attachment.lua", "lib/Solvers/Bone.lua", 
+"lib/Solvers/LinkAttachmentslua", "lib/Solvers/Vector3.lua",
+"lib/GoodSignal.lua", "lib/HitboxCaster.lua", "lib/VisualizerCache.lua",    
 "default.project.json", "wally.toml"]
 
 [dependencies]
