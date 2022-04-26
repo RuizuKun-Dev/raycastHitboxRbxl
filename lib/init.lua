@@ -1,5 +1,5 @@
-local SHOW_DEBUG_RAY_LINES = true
-local SHOW_OUTPUT_MESSAGES = true
+local SHOW_DEBUG_RAY_LINES = false
+local SHOW_OUTPUT_MESSAGES = false
 local DEFAULT_COLLECTION_TAG_NAME = "_RaycastHitboxV4Managed"
 local CollectionService = game:GetService("CollectionService")
 local HitboxData = require(script.HitboxCaster)
