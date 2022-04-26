@@ -1,20 +1,20 @@
 local freeRunnerThread = nil
 
 local function acquireRunnerThreadAndCallEventHandler(fn, ...)
-    local acquiredRunnerThread = freeRunnerThread
+	local acquiredRunnerThread = freeRunnerThread
 
-    freeRunnerThread = nil
+	freeRunnerThread = nil
 
-    fn(...)
+	fn(...)
 
-    freeRunnerThread = acquiredRunnerThread
+	freeRunnerThread = acquiredRunnerThread
 end
 local function runEventHandlerInFreeThread(...)
-    acquireRunnerThreadAndCallEventHandler(...)
+	acquireRunnerThreadAndCallEventHandler(...)
 
-    while true do
-        acquireRunnerThreadAndCallEventHandler(coroutine.yield())
-    end
+	while true do
+		acquireRunnerThreadAndCallEventHandler(coroutine.yield())
+	end
 end
 
 local Connection = {}
@@ -22,40 +22,40 @@ local Connection = {}
 Connection.__index = Connection
 
 function Connection.new(signal, fn)
-    return setmetatable({
-        _connected = true,
-        _signal = signal,
-        _fn = fn,
-        _next = false,
-    }, Connection)
+	return setmetatable({
+		_connected = true,
+		_signal = signal,
+		_fn = fn,
+		_next = false,
+	}, Connection)
 end
 function Connection:Disconnect()
-    assert(self._connected, "Can't disconnect a connection twice.", 2)
+	assert(self._connected, "Can't disconnect a connection twice.", 2)
 
-    self._connected = false
+	self._connected = false
 
-    if self._signal._handlerListHead == self then
-        self._signal._handlerListHead = self._next
-    else
-        local prev = self._signal._handlerListHead
+	if self._signal._handlerListHead == self then
+		self._signal._handlerListHead = self._next
+	else
+		local prev = self._signal._handlerListHead
 
-        while prev and prev._next ~= self do
-            prev = prev._next
-        end
+		while prev and prev._next ~= self do
+			prev = prev._next
+		end
 
-        if prev then
-            prev._next = self._next
-        end
-    end
+		if prev then
+			prev._next = self._next
+		end
+	end
 end
 
 setmetatable(Connection, {
-    __index = function(tb, key)
-        error(('Attempt to get Connection::%s (not a valid member)'):format(tostring(key)), 2)
-    end,
-    __newindex = function(tb, key, value)
-        error(('Attempt to set Connection::%s (not a valid member)'):format(tostring(key)), 2)
-    end,
+	__index = function(tb, key)
+		error(("Attempt to get Connection::%s (not a valid member)"):format(tostring(key)), 2)
+	end,
+	__newindex = function(tb, key, value)
+		error(("Attempt to set Connection::%s (not a valid member)"):format(tostring(key)), 2)
+	end,
 })
 
 local Signal = {}
@@ -63,60 +63,60 @@ local Signal = {}
 Signal.__index = Signal
 
 function Signal.new(signal)
-    return setmetatable({
-        _handlerListHead = false,
-        _signalType = signal,
-    }, Signal)
+	return setmetatable({
+		_handlerListHead = false,
+		_signalType = signal,
+	}, Signal)
 end
 function Signal:Connect(fn)
-    local connection = Connection.new(self, fn)
+	local connection = Connection.new(self, fn)
 
-    if self._signalType == 1 and self._handlerListHead then
-        connection._next = self._handlerListHead
-        self._handlerListHead = connection
-    else
-        self._handlerListHead = connection
-    end
+	if self._signalType == 1 and self._handlerListHead then
+		connection._next = self._handlerListHead
+		self._handlerListHead = connection
+	else
+		self._handlerListHead = connection
+	end
 
-    return connection
+	return connection
 end
 function Signal:Destroy()
-    self._handlerListHead = false
+	self._handlerListHead = false
 end
 function Signal:Fire(...)
-    local item = self._handlerListHead
+	local item = self._handlerListHead
 
-    while item do
-        if item._connected then
-            if not freeRunnerThread then
-                freeRunnerThread = coroutine.create(runEventHandlerInFreeThread)
-            end
+	while item do
+		if item._connected then
+			if not freeRunnerThread then
+				freeRunnerThread = coroutine.create(runEventHandlerInFreeThread)
+			end
 
-            task.spawn(freeRunnerThread, item._fn, ...)
-        end
+			task.spawn(freeRunnerThread, item._fn, ...)
+		end
 
-        item = item._next
-    end
+		item = item._next
+	end
 end
 function Signal:Wait()
-    local waitingCoroutine = coroutine.running()
-    local cn
+	local waitingCoroutine = coroutine.running()
+	local cn
 
-    cn = self:Connect(function(...)
-        cn:Disconnect()
-        task.spawn(waitingCoroutine, ...)
-    end)
+	cn = self:Connect(function(...)
+		cn:Disconnect()
+		task.spawn(waitingCoroutine, ...)
+	end)
 
-    return coroutine.yield()
+	return coroutine.yield()
 end
 
 setmetatable(Signal, {
-    __index = function(tb, key)
-        error(('Attempt to get Signal::%s (not a valid member)'):format(tostring(key)), 2)
-    end,
-    __newindex = function(tb, key, value)
-        error(('Attempt to set Signal::%s (not a valid member)'):format(tostring(key)), 2)
-    end,
+	__index = function(tb, key)
+		error(("Attempt to get Signal::%s (not a valid member)"):format(tostring(key)), 2)
+	end,
+	__newindex = function(tb, key, value)
+		error(("Attempt to set Signal::%s (not a valid member)"):format(tostring(key)), 2)
+	end,
 })
 
 return Signal
